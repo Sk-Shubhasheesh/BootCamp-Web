@@ -1,5 +1,5 @@
 const express = require("express");
-
+const path = require("path");
 const app = express();
 
 app.use(express.json());
@@ -24,8 +24,8 @@ app.get("/notes", function(req, res) {
 })
 
 app.get("/", function(req, res) {
-    res.sendFile("E:\\BootCamp 1\\Week 9- Authentication and JWT\\frontend\\index.html")
-})
+    res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
 app.listen(3000);
 
 // E:\BootCamp 1\Week 9- Authentication and JWT\frontend\index.html
