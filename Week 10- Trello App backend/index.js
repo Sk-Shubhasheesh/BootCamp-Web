@@ -45,6 +45,7 @@ const issues = [{
 const e = require('express');
 const express = require('express');
 const jwt = require("jsonwebtoken");
+const { authMiddleware } = require("./middleware")
 
 let USERS_ID = 1;
 let ORGANIZATION_ID = 1;
@@ -111,11 +112,51 @@ app.post("/signin", (req, res)=>{
 
 })
 
-app.post("/organization", (req, res)=>{
+
+// AUTHENTICATED ROUTE - MIDDLEWARE
+app.post("/organization", authMiddleware, (req, res)=>{
+    const userId = req.userId;
+    ORGANIZATIONS.push({
+    id: ORGANIZATION_ID++,
+    title: req.body.title,
+    description: req.body.description,
+    admin: userId,
+    members: []
+    })
+    res.json({
+        message: "Org created",
+        id: ORGANIZATION_ID -1
+    })
+
 
 })
 
-app.post("/add-member-to-organization", (req, res)=>{
+app.post("/add-member-to-organization", authMiddleware, (req, res)=>{
+    const userId = req.userId;
+    const organizationId =  req.body.organizationId;
+    const memerUserUsername = req.body.memerUserUsername;
+    const organization = ORGANIZATIONS.find(org=> org.id === organizationId)
+       if (!organization || organization.admin !== userId) {
+        res.status(411).json({
+            message: "Either this org doesnt exist or you are not an admin of this org"
+        })
+        return
+    }
+       const memberUser = USERS.find(u => u.username === memerUserUsername);
+
+    if (!memberUser) {
+        res.status(411).json({
+            message: "No user with this username exists in our db"
+        })
+        return
+    }
+
+    organization.members.push(memberUser.id);
+
+    res.json({
+        message: "New member added!"
+    }) 
+
 
 })
 
