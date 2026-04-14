@@ -42,7 +42,9 @@ const issues = [{
 }]
     */
 
+const e = require('express');
 const express = require('express');
+const jwt = require("jsonwebtoken");
 
 let USERS_ID = 1;
 let ORGANIZATION_ID = 1;
@@ -59,6 +61,7 @@ const ISSUES = [];
 
 
 const app = express();
+app.use(express.json())
 
 // CREATE End Point
 app.post("/signup", (req, res)=>{
@@ -86,6 +89,25 @@ app.post("/signup", (req, res)=>{
 })
 
 app.post("/signin", (req, res)=>{
+    const username = req.body.username;
+    const password = req.body.password;
+    const userExists = USERS.find(u=>u.username === username & u.password === password);
+    if(!userExists){
+        res.status(403).json({
+            message: "Incorred credentials"
+        })
+    }
+    // if user exits create jwt for the user
+    const token  = jwt.sign({
+        userId: userExists.id
+    }, "atlasiation123");
+
+    res.json({
+        token
+    })
+
+
+
 
 })
 
