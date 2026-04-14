@@ -152,8 +152,26 @@ app.post("/add-member-to-organization", authMiddleware, (req, res) => {
     })
 })
 
-app.post("/board", (req, res) => {
+app.post("/board", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const organizationId = req.body.organizationId;
+    const boardTitle = req.body.boardTitle;
+    const organization = ORGANIZATIONS.filter(org => org.id === organizationId);
+    if (!organization || organization.admin != userId) {
+        res.status(404).json({
+            message: "eighter the org does not exist or you are not the admin of the org"
+        })
+    }
 
+    BOARDS.push({
+        id: BOARD_ID++,
+        title: boardTitle,
+        organizationId: organizationId
+    })
+    res.status(201).json({
+        message: "board is created!",
+        id: BOARD_ID - 1
+    })
 })
 
 app.post("/issue", (req, res) => {
