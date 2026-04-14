@@ -46,6 +46,62 @@ const express = require('express');
 
 const app = express();
 
+// CREATE End Point
+app.post("/signup", (req, res)=>{
+
+})
+
+app.post("/signin", (req, res)=>{
+
+})
+
+app.post("/organization", (req, res)=>{
+
+})
+
+app.post("/add-member-to-organization", (req, res)=>{
+
+})
+
+app.post("/board", (req, res)=>{
+
+})
+
+app.post("/issue", (req, res)=>{
+
+})
+
+// READ - GET endpoints
+app.get("/boards", (req, res)=>{
+
+})
+
+app.get("/issues", (req, res)=>{
+
+})
+
+app.get("/members", (req, res)=>{
+
+})
+
+// UPDATE
+app.put("/issues", (req, res) => {
+
+})
+
+// DELETE Endpoint
+app.delete("/members", (req, res)=>{
+    
+})
+
+
+
+
+
+
+
+
+
 app.listen(3000);
 
 
