@@ -41,8 +41,6 @@ const issues = [{
     boardId: 1
 }]
     */
-
-const e = require('express');
 const express = require('express');
 const jwt = require("jsonwebtoken");
 const { authMiddleware } = require("./middleware")
@@ -65,7 +63,7 @@ const app = express();
 app.use(express.json())
 
 // CREATE End Point
-app.post("/signup", (req, res)=>{
+app.post("/signup", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
@@ -89,17 +87,17 @@ app.post("/signup", (req, res)=>{
 
 })
 
-app.post("/signin", (req, res)=>{
+app.post("/signin", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    const userExists = USERS.find(u=>u.username === username & u.password === password);
-    if(!userExists){
+    const userExists = USERS.find(u => u.username === username & u.password === password);
+    if (!userExists) {
         res.status(403).json({
             message: "Incorred credentials"
         })
     }
     // if user exits create jwt for the user
-    const token  = jwt.sign({
+    const token = jwt.sign({
         userId: userExists.id
     }, "atlasiation123");
 
@@ -107,42 +105,38 @@ app.post("/signin", (req, res)=>{
         token
     })
 
-
-
-
 })
 
 
 // AUTHENTICATED ROUTE - MIDDLEWARE
-app.post("/organization", authMiddleware, (req, res)=>{
+app.post("/organization", authMiddleware, (req, res) => {
     const userId = req.userId;
     ORGANIZATIONS.push({
-    id: ORGANIZATION_ID++,
-    title: req.body.title,
-    description: req.body.description,
-    admin: userId,
-    members: []
+        id: ORGANIZATION_ID++,
+        title: req.body.title,
+        description: req.body.description,
+        admin: userId,
+        members: []
     })
     res.json({
         message: "Org created",
-        id: ORGANIZATION_ID -1
+        id: ORGANIZATION_ID - 1
     })
-
 
 })
 
-app.post("/add-member-to-organization", authMiddleware, (req, res)=>{
+app.post("/add-member-to-organization", authMiddleware, (req, res) => {
     const userId = req.userId;
-    const organizationId =  req.body.organizationId;
+    const organizationId = req.body.organizationId;
     const memerUserUsername = req.body.memerUserUsername;
-    const organization = ORGANIZATIONS.find(org=> org.id === organizationId)
-       if (!organization || organization.admin !== userId) {
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId)
+    if (!organization || organization.admin !== userId) {
         res.status(411).json({
             message: "Either this org doesnt exist or you are not an admin of this org"
         })
         return
     }
-       const memberUser = USERS.find(u => u.username === memerUserUsername);
+    const memberUser = USERS.find(u => u.username === memerUserUsername);
 
     if (!memberUser) {
         res.status(411).json({
@@ -155,16 +149,14 @@ app.post("/add-member-to-organization", authMiddleware, (req, res)=>{
 
     res.json({
         message: "New member added!"
-    }) 
+    })
+})
 
+app.post("/board", (req, res) => {
 
 })
 
-app.post("/board", (req, res)=>{
-
-})
-
-app.post("/issue", (req, res)=>{
+app.post("/issue", (req, res) => {
 
 })
 
@@ -174,9 +166,6 @@ app.get("/organization", authMiddleware, (req, res) => {
     const organizationId = parseInt(req.query.organizationId); // "1"
 
     const organization = ORGANIZATIONS.find(org => org.id === organizationId);
-
-    console.log(organization);
-    console.log(userId);
     if (!organization || organization.admin !== userId) {
         res.status(411).json({
             message: "Either this org doesnt exist or you are not an admin of this org"
@@ -198,15 +187,15 @@ app.get("/organization", authMiddleware, (req, res) => {
     })
 })
 
-app.get("/boards", (req, res)=>{
+app.get("/boards", (req, res) => {
 
 })
 
-app.get("/issues", (req, res)=>{
+app.get("/issues", (req, res) => {
 
 })
 
-app.get("/members", (req, res)=>{
+app.get("/members", (req, res) => {
 
 })
 
@@ -244,15 +233,6 @@ app.delete("/members", authMiddleware, (req, res) => {
         message: "member deleted!"
     })
 })
-
-
-
-
-
-
-
-
-
 
 app.listen(3000);
 
