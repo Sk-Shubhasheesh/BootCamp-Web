@@ -248,10 +248,47 @@ app.get("/boards", authMiddleware, (req, res) => {
 })
 
 app.get("/issues", (req, res) => {
+    const userId = req.userId;
+    const boardId = parseInt(req.query.boardId);
 
+    const board = BOARDS.find(board => board.id === boardId);
+
+    if (!board) {
+        res.status(411).json({
+            message: "No board with this id exists in our db"
+        })
+        return
+    }
+
+    const issues = ISSUES.filter(issue => issue.boardId === board.id);
+
+    res.status(200).json({
+        issues
+    })
 })
 
 app.get("/members", (req, res) => {
+    const userId = req.userId;
+    const organizationId = parseInt(req.query.organizationId);
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+
+    if (!organization || organization.admin !== userId) {
+        res.status(411).json({
+            message: "Either this org doesnt exist or you are not an admin of this org"
+        })
+        return
+    }
+
+    res.json({
+        members: organization.memberIds.map(memberId => {
+            const user = USERS.find(user => user.id === memberId);
+            return {
+                id: user.id,
+                username: user.username
+            }
+        })
+    })
 
 })
 
