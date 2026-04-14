@@ -175,15 +175,15 @@ app.post("/board", authMiddleware, (req, res) => {
     })
 })
 
-app.post("/issue",authMiddleware, (req, res) => {
+app.post("/issue", authMiddleware, (req, res) => {
     const userId = req.userId;
     const boardId = req.body.boardId;
     const issueTitle = req.body.title;
 
-    const board = BOARDS.find(board=>board.id ===boardId)
-    if(!board){
+    const board = BOARDS.find(board => board.id === boardId)
+    if (!board) {
         return res.status(404).json({
-            message:"No board with this id exists in our db"
+            message: "No board with this id exists in our db"
         })
     }
     ISSUES.push({
@@ -192,9 +192,9 @@ app.post("/issue",authMiddleware, (req, res) => {
         board: board.id,
         status: "UP_NEXT"
     })
-      res.status(201).json({
-        message:"issue created",
-        id:ISSUES_ID - 1
+    res.status(201).json({
+        message: "issue created",
+        id: ISSUES_ID - 1
     })
 
 })
@@ -226,7 +226,24 @@ app.get("/organization", authMiddleware, (req, res) => {
     })
 })
 
-app.get("/boards", (req, res) => {
+app.get("/boards", authMiddleware, (req, res) => {
+    const userId = req.body.userId;
+    const organizationId = parseInt(req.query.organizationId);
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+
+    if (!organization || organization.admin !== userId) {
+        res.status(411).json({
+            message: "Either this org doesnt exist or you are not an admin of this org"
+        })
+        return
+    }
+
+    const boards = BOARDS.filter(board => board.organizationId === organization.id);
+
+    res.status(200).json({
+        boards
+    })
 
 })
 
