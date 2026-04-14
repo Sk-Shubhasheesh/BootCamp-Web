@@ -294,6 +294,34 @@ app.get("/members", (req, res) => {
 
 // UPDATE
 app.put("/issues", (req, res) => {
+    let userId = req.userId;
+    let boardId = req.body.boardId;
+    let beforeTitle = req.body.beforeTitle;
+    let afterTitle = req.body.afterTitle;
+
+    let board = BOARDS.find(board=>board.id===boardId);
+    if(!board){
+        res.status(404).json({
+            message:"No board with this id exists in our db"
+        })
+        return;
+    }
+
+    let issue = ISSUES.find(issue=>issue.title===beforeTitle && issue.boardId === boardId)
+
+    if(!issue){
+        res.status(400).json({
+            message:"No issue with this id and title exists in our db"
+        })
+        return
+    }
+
+    issue.title = afterTitle
+
+    res.status(201).json({
+        message:"issue updated",
+        id:issue.id
+    })
 
 })
 
