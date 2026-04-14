@@ -169,6 +169,35 @@ app.post("/issue", (req, res)=>{
 })
 
 // READ - GET endpoints
+app.get("/organization", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const organizationId = parseInt(req.query.organizationId); // "1"
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+
+    console.log(organization);
+    console.log(userId);
+    if (!organization || organization.admin !== userId) {
+        res.status(411).json({
+            message: "Either this org doesnt exist or you are not an admin of this org"
+        })
+        return
+    }
+
+    res.json({
+        organization: {
+            ...organization,
+            members: organization.members.map(memberId => {
+                const user = USERS.find(user => user.id === memberId);
+                return {
+                    id: user.id,
+                    username: user.username
+                }
+            })
+        }
+    })
+})
+
 app.get("/boards", (req, res)=>{
 
 })
@@ -187,10 +216,10 @@ app.put("/issues", (req, res) => {
 })
 
 // DELETE Endpoint
-app.delete("/members", (req, res)=>{
+app.delete("/members", authMiddleware, (req, res) => {
     const userId = req.userId;
     const organizationId = req.body.organizationId;
-    const memerUserUsername = req.body.memberUserUsername;
+    const memberUserUsername = req.body.memberUserUsername;
 
     const organization = ORGANIZATIONS.find(org => org.id === organizationId);
 
@@ -198,25 +227,24 @@ app.delete("/members", (req, res)=>{
         res.status(411).json({
             message: "Either this org doesnt exist or you are not an admin of this org"
         })
-        return
     }
 
-    const memberUser = USERS.find(u => u.username === memerUserUsername);
+    const memberUser = USERS.find(u => u.username === memberUserUsername);
 
     if (!memberUser) {
         res.status(411).json({
             message: "No user with this username exists in our db"
         })
-        return
     }
-
-    organization.members = organization.members.filter(user => user.id !== memberUser.id);
+    organization.members = organization.members.filter(
+        id => id !== memberUser.id
+    );
 
     res.json({
         message: "member deleted!"
     })
-
 })
+
 
 
 
