@@ -188,6 +188,33 @@ app.put("/issues", (req, res) => {
 
 // DELETE Endpoint
 app.delete("/members", (req, res)=>{
+    const userId = req.userId;
+    const organizationId = req.body.organizationId;
+    const memerUserUsername = req.body.memberUserUsername;
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+
+    if (!organization || organization.admin !== userId) {
+        res.status(411).json({
+            message: "Either this org doesnt exist or you are not an admin of this org"
+        })
+        return
+    }
+
+    const memberUser = USERS.find(u => u.username === memerUserUsername);
+
+    if (!memberUser) {
+        res.status(411).json({
+            message: "No user with this username exists in our db"
+        })
+        return
+    }
+
+    organization.members = organization.members.filter(user => user.id !== memberUser.id);
+
+    res.json({
+        message: "member deleted!"
+    })
 
 })
 
