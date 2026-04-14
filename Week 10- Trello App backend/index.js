@@ -156,9 +156,10 @@ app.post("/board", authMiddleware, (req, res) => {
     const userId = req.userId;
     const organizationId = req.body.organizationId;
     const boardTitle = req.body.boardTitle;
-    const organization = ORGANIZATIONS.filter(org => org.id === organizationId);
+    // update here from filter to find
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
     if (!organization || organization.admin != userId) {
-        res.status(404).json({
+        return res.status(404).json({
             message: "eighter the org does not exist or you are not the admin of the org"
         })
     }
@@ -168,13 +169,33 @@ app.post("/board", authMiddleware, (req, res) => {
         title: boardTitle,
         organizationId: organizationId
     })
-    res.status(201).json({
+    return res.status(201).json({
         message: "board is created!",
         id: BOARD_ID - 1
     })
 })
 
-app.post("/issue", (req, res) => {
+app.post("/issue",authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const boardId = req.body.boardId;
+    const issueTitle = req.body.title;
+
+    const board = BOARDS.find(board=>board.id ===boardId)
+    if(!board){
+        return res.status(404).json({
+            message:"No board with this id exists in our db"
+        })
+    }
+    ISSUES.push({
+        id: ISSUES_ID++,
+        title: issueTitle,
+        board: board.id,
+        status: "UP_NEXT"
+    })
+      res.status(201).json({
+        message:"issue created",
+        id:ISSUES_ID - 1
+    })
 
 })
 
