@@ -44,10 +44,44 @@ const issues = [{
 
 const express = require('express');
 
+let USERS_ID = 1;
+let ORGANIZATION_ID = 1;
+let BOARD_ID = 1;
+let ISSUES_ID = 1;
+
+const USERS = [];
+
+const ORGANIZATIONS = [];
+
+const BOARDS = [];
+
+const ISSUES = [];
+
+
 const app = express();
 
 // CREATE End Point
 app.post("/signup", (req, res)=>{
+    const username = req.body.username;
+    const password = req.body.password;
+
+    const userExists = USERS.find(u => u.username === username);
+    if (userExists) {
+        res.status(411).json({
+            message: "User with this username already exists"
+        })
+        return;
+    }
+
+    USERS.push({
+        username,
+        password,
+        id: USERS_ID++
+    })
+
+    res.json({
+        message: "You have signed up successfully"
+    })
 
 })
 
@@ -91,7 +125,7 @@ app.put("/issues", (req, res) => {
 
 // DELETE Endpoint
 app.delete("/members", (req, res)=>{
-    
+
 })
 
 
