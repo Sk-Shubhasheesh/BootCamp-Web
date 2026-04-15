@@ -281,7 +281,7 @@ app.get("/members",authMiddleware, (req, res) => {
     }
 
     res.json({
-        members: organization.memberIds.map(memberId => {
+        members: organization.members.map(memberId => {
             const user = USERS.find(user => user.id === memberId);
             return {
                 id: user.id,
