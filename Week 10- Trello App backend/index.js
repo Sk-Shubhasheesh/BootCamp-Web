@@ -177,8 +177,8 @@ app.post("/board", authMiddleware, (req, res) => {
 
 app.post("/issue", authMiddleware, (req, res) => {
     const userId = req.userId;
-    const boardId = req.body.boardId;
-    const issueTitle = req.body.title;
+    const boardId = Number(req.body.boardId);
+    const title = req.body.title;
 
     const board = BOARDS.find(board => board.id === boardId)
     if (!board) {
@@ -188,8 +188,8 @@ app.post("/issue", authMiddleware, (req, res) => {
     }
     ISSUES.push({
         id: ISSUES_ID++,
-        title: issueTitle,
-        board: board.id,
+        title: title,
+        boardId: boardId,
         status: "UP_NEXT"
     })
     res.status(201).json({
@@ -227,7 +227,7 @@ app.get("/organization", authMiddleware, (req, res) => {
 })
 
 app.get("/boards", authMiddleware, (req, res) => {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const organizationId = parseInt(req.query.organizationId);
 
     const organization = ORGANIZATIONS.find(org => org.id === organizationId);
@@ -239,7 +239,7 @@ app.get("/boards", authMiddleware, (req, res) => {
         return
     }
 
-    const boards = BOARDS.filter(board => board.organizationId === organization.id);
+    const boards = BOARDS.filter(board => board.organizationId === organizationId);
 
     res.status(200).json({
         boards
@@ -247,9 +247,9 @@ app.get("/boards", authMiddleware, (req, res) => {
 
 })
 
-app.get("/issues", (req, res) => {
+app.get("/issues",authMiddleware, (req, res) => {
     const userId = req.userId;
-    const boardId = parseInt(req.query.boardId);
+    const boardId = Number(req.query.boardId);
 
     const board = BOARDS.find(board => board.id === boardId);
 
@@ -260,14 +260,14 @@ app.get("/issues", (req, res) => {
         return
     }
 
-    const issues = ISSUES.filter(issue => issue.boardId === board.id);
+    const issues = ISSUES.filter(issue => issue.boardId === boardId);
 
     res.status(200).json({
         issues
     })
 })
 
-app.get("/members", (req, res) => {
+app.get("/members",authMiddleware, (req, res) => {
     const userId = req.userId;
     const organizationId = parseInt(req.query.organizationId);
 
@@ -293,7 +293,7 @@ app.get("/members", (req, res) => {
 })
 
 // UPDATE
-app.put("/issues", (req, res) => {
+app.put("/issues",authMiddleware, (req, res) => {
     let userId = req.userId;
     let boardId = req.body.boardId;
     let beforeTitle = req.body.beforeTitle;
