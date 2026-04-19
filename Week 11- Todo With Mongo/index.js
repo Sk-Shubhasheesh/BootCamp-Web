@@ -81,10 +81,17 @@ app.post("/todo", authMiddleware, async (req, res) => {
 
 })
 
-app.get("/todo", authMiddleware, (req, res) => {
+app.get("/todo", authMiddleware, async (req, res) => {
     const userId = req.userId;
 
-})
+        const todos = await todoModel.find({ userId });
+
+        res.json({
+            message: "Todos fetched successfully",
+            todos: todos
+        });
+
+    });
 
 
 
