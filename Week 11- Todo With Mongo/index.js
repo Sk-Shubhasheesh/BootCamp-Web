@@ -3,28 +3,28 @@ const express = require('express');
 const { authMiddleware } = require('./middleware');
 const jwt = require('jsonwebtoken');
 
-const { todoModel,userModel } = require("./models");
+const { todoModel, userModel } = require("./models");
 
 const app = express();
 app.use(express.json());
 
 
-app.post("/signup", async(req, res)=>{
-    const username =req.body.username;
+app.post("/signup", async (req, res) => {
+    const username = req.body.username;
     const password = req.body.password;
     const existingUser = await userModel.findOne({
-        username:username,
+        username: username,
         password: password
     })
-    if(existingUser){
+    if (existingUser) {
         res.status(403).json({
-           message: "User with this username already exists" 
+            message: "User with this username already exists"
         })
         return
     }
     const newUser = await userModel.create({
         username: username,
-        password:password
+        password: password
     })
     res.json({
         id: newUser._id
@@ -32,16 +32,16 @@ app.post("/signup", async(req, res)=>{
 
 })
 
-app.post("/signin", async(req, res)=>{
+app.post("/signin", async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const existingUser = await userModel.findOne({
-        username:username,
+        username: username,
         password: password
     })
-    if(!existingUser){
+    if (!existingUser) {
         res.status(403).json({
-           message: "Incorrect credentials" 
+            message: "Incorrect credentials"
         })
         return
     }
@@ -54,12 +54,34 @@ app.post("/signin", async(req, res)=>{
 
 })
 
-app.post("/todo",authMiddleware, (req, res)=>{
+app.post("/todo", authMiddleware, async (req, res) => {
     const userId = req.userId;
-    
+    const title = req.body.title;
+    const description = req.body.description;
+    const token = req.headers.token;
+    if (!token) {
+        res.status(403).json({
+            message: "Incorrect credentials"
+        })
+        return
+
+    }
+
+    const todo = await todoModel.create({
+        userId,
+        title,
+        description
+    })
+    res.json({
+        message: "Todo Created",
+        Todo: todo
+
+    })
+
+
 })
 
-app.get("/todo",authMiddleware, (req, res)=>{
+app.get("/todo", authMiddleware, (req, res) => {
     const userId = req.userId;
 
 })
