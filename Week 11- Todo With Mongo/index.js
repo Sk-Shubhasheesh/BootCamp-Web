@@ -32,7 +32,25 @@ app.post("/signup", async(req, res)=>{
 
 })
 
-app.post("/signin", (req, res)=>{
+app.post("/signin", async(req, res)=>{
+    const username = req.body.username;
+    const password = req.body.password;
+    const existingUser = await userModel.findOne({
+        username:username,
+        password: password
+    })
+    if(!existingUser){
+        res.status(403).json({
+           message: "Incorrect credentials" 
+        })
+        return
+    }
+    const token = jwt.sign({
+        userId: existingUser.id
+    }, "123123")
+    res.json({
+        token
+    })
 
 })
 
