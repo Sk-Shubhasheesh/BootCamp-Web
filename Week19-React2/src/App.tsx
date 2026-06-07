@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
 
 
@@ -100,59 +100,87 @@ The effect runs whenever any dependency changes.
 
  */
 
-function App() {
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("");
+// function App() {
+//   const [count, setCount] = useState(0);
+//   const [name, setName] = useState("");
 
-  // 1. Runs after every render
-  useEffect(() => {
-    console.log("1. Runs after every render");
-  });
+//   // 1. Runs after every render
+//   useEffect(() => {
+//     console.log("1. Runs after every render");
+//   });
 
-  // 2. Runs only once when component mounts
-  useEffect(() => {
-    console.log("2. Component Mounted");
+//   // 2. Runs only once when component mounts
+//   useEffect(() => {
+//     console.log("2. Component Mounted");
 
-    return () => {
-      console.log("Component Unmounted");
-    };
-  }, []);
+//     return () => {
+//       console.log("Component Unmounted");
+//     };
+//   }, []);
 
-  // 3. Runs when count changes
-  useEffect(() => {
-    console.log("3. Count Changed:", count);
+//   // 3. Runs when count changes
+//   useEffect(() => {
+//     console.log("3. Count Changed:", count);
 
-    document.title = `Count: ${count}`;
-  }, [count]);
+//     document.title = `Count: ${count}`;
+//   }, [count]);
 
-  // 4. Runs when count OR name changes
-  useEffect(() => {
-    console.log("4. Count or Name Changed");
-  }, [count, name]);
+//   // 4. Runs when count OR name changes
+//   useEffect(() => {
+//     console.log("4. Count or Name Changed");
+//   }, [count, name]);
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1>useEffect Complete Example</h1>
+//   return (
+//     <div style={{ padding: "20px" }}>
+//       <h1>useEffect Complete Example</h1>
 
-      <h2>Count: {count}</h2>
+//       <h2>Count: {count}</h2>
 
-      <button onClick={() => setCount(count + 1)}>
-        Increment Count
-      </button>
+//       <button onClick={() => setCount(count + 1)}>
+//         Increment Count
+//       </button>
 
-      <br />
-      <br />
+//       <br />
+//       <br />
 
-      <input
-        type="text"
-        placeholder="Enter Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+//       <input
+//         type="text"
+//         placeholder="Enter Name"
+//         value={name}
+//         onChange={(e) => setName(e.target.value)}
+//       />
+
+//       <h2>Name: {name}</h2>
+//     </div>
+//   );
+// }
+
+
+
+// 3. useRef Hook
+function App(){
+  const [inputValue,setInputValue]=useState("");
+  const inputRef= useRef(null)
+
+  // want so run code as soon as loaded
+  useEffect(()=>{
+    inputRef.current && inputRef.current.focus();
+  },[])
+
+  return(
+    <div>
+      <input 
+      type="text"
+      placeholder="Type something"
+      value={inputValue}
+      onChange={(e)=>setInputValue(e.target.value)} 
+      ref={inputRef}
       />
-
-      <h2>Name: {name}</h2>
+      <p>
+        Youtyped: <strong>{inputValue}</strong>
+      </p>
     </div>
-  );
+  )
 }
 
 
